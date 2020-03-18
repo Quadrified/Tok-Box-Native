@@ -1,14 +1,22 @@
 import React, {Component} from 'react';
-import {View, TouchableOpacity, Button, Text} from 'react-native';
+import {View, TouchableOpacity, Button, Text, BackHandler} from 'react-native';
 import {OTSession, OTPublisher, OTSubscriber} from 'opentok-react-native';
-import FlipCam from './assets/flipCam.svg';
 export default class App extends Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      streamProperties: {},
+    };
+
+    this.subscriberProperties = {
+      subscribeToAudio: false,
+      subscribeToVideo: true,
+    };
+
     this.publisherProperties = {
-      publishAudio: false,
-      cameraPosition: 'back',
+      publishAudio: true,
+      cameraPosition: 'front',
     };
 
     this.publisherEventHandlers = {
@@ -17,6 +25,29 @@ export default class App extends Component {
       },
       streamDestroyed: event => {
         console.log('Publisher stream destroyed!', event);
+      },
+    };
+
+    this.sessionEventHandlers = {
+      streamCreated: event => {
+        const streamProperties = {
+          ...this.state.streamProperties,
+          [event.streamId]: {
+            subscribeToAudio: true,
+            subscribeToVideo: true,
+            style: {
+              width: 400,
+              height: 350,
+            },
+          },
+        };
+        this.setState({streamProperties});
+      },
+    };
+
+    this.subscriberEventHandlers = {
+      error: error => {
+        console.log(`There was an error with the subscriber: ${error}`);
       },
     };
 
@@ -32,14 +63,52 @@ export default class App extends Component {
   render() {
     return (
       <View style={{flex: 1}}>
-        <OTSession
-          apiKey={this.apiKey}
-          sessionId={this.sessionId}
-          token={this.token}
-          style={{margin: 10}}>
-          <OTPublisher style={{width: 500, height: 500}} />
-          <OTSubscriber style={{width: 500, height: 500}} />
-        </OTSession>
+        <View>
+          <OTSession
+            apiKey={this.apiKey}
+            sessionId={this.sessionId}
+            token={this.token}
+            eventHandlers={this.sessionEventHandlers}
+            style={{margin: 10}}>
+            <OTSubscriber
+              properties={this.subscriberProperties}
+              eventHandlers={this.subscriberEventHandlers}
+              streamProperties={this.state.streamProperties}
+              style={{height: 100, width: 100}}
+            />
+            <OTPublisher
+              properties={this.publisherProperties}
+              eventHandlers={this.publisherEventHandlers}
+              style={{width: 200, height: 250, marginTop: 5}}
+            />
+          </OTSession>
+          <TouchableOpacity
+            style={{
+              borderRadius: 6,
+              marginTop: 10,
+              backgroundColor: '#E71C23',
+              height: 55,
+              width: 120,
+              marginLeft: 230,
+              marginTop: -100,
+            }}
+            onPress={() => {
+              BackHandler.exitApp();
+            }}>
+            <View>
+              <Text
+                style={{
+                  color: '#fff',
+                  fontSize: 20,
+                  padding: 12,
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                }}>
+                End Call
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
