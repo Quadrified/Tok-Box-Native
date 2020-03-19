@@ -54,6 +54,7 @@ export default class MainPage extends Component {
   onNotif(notif) {
     console.log(notif);
     if (notif.action === 'Accept') {
+      this.setState({showTheThing: true});
       this.props.navigation.navigate('TokScreen');
       PushNotificationAndroid.cancelAllLocalNotifications();
     } else if (notif.action === 'Later') {
@@ -89,7 +90,7 @@ export default class MainPage extends Component {
               bottom: 0,
               // marginTop: AppSizes.height - 150,
             }}>
-            <Text style={styles.message}> Your call has been Scheduled </Text>
+            <Text style={styles.message}>Your call has been scheduled!</Text>
             <TouchableOpacity style={styles.Login} onPress={this.onJoinCall}>
               <Text style={styles.LoginText}>Join call</Text>
             </TouchableOpacity>
