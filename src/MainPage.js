@@ -3,24 +3,31 @@ import {
   Text,
   StyleSheet,
   View,
+  ScrollView,
+  KeyboardAvoidingView,
   TouchableOpacity,
   DeviceEventEmitter,
 } from 'react-native';
+import Reinput from 'reinput';
 import Toast from 'react-native-simple-toast';
 import SplashScreen from './../assets/upload.svg';
 import AppSizes from './../themes/AppSizes';
 import NotifService from './NotifyService';
 import PushNotificationAndroid from 'react-native-push-notification';
+import axios from 'axios';
 
 export default class MainPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showTheThing: false,
+      showTheThing: true,
+      credentials: {
+        email: '',
+      },
     };
     console.log(this.props);
     this.notif = new NotifService(this.onNotif.bind(this));
-    this.notif.scheduleNotif();
+    //this.notif.scheduleNotif();
   }
   //   NotificationRegister = () => {
   //     // Register all the valid actions for notifications here and add the action handler for each action
@@ -43,6 +50,42 @@ export default class MainPage extends Component {
     this.props.navigation.navigate('TokScreen');
   };
 
+  onEmailChange = e => {
+    this.setState(prevState => ({
+      credentials: {
+        ...prevState.credentials,
+        email: e,
+      },
+    }));
+  };
+  renderEmail() {
+    return (
+      <View style={styles.FormInput}>
+        <Reinput
+          onChangeText={this.onEmailChange}
+          label="Email ID"
+          labelActiveColor="#6D7685"
+          activeColor="#6D7685"
+          underlineColor="#434343"
+          color="#434343"
+          fontSize={15}
+          paddingBottom={10}
+          autoCorrect={false}
+          enablesReturnKeyAutomatically={true}
+          returnKeyType="next"
+          keyboardType="email-address"
+        />
+      </View>
+    );
+  }
+  renderLoginButton() {
+    return (
+      <TouchableOpacity style={styles.Login} onPress={this.onLogin}>
+        <Text style={styles.LoginText}>Invite</Text>
+      </TouchableOpacity>
+    );
+  }
+
   onRegister = token => {
     console.log(token);
     this.setState({
@@ -63,8 +106,34 @@ export default class MainPage extends Component {
       PushNotificationAndroid.cancelAllLocalNotifications();
     }
   }
-
-  handlePerm = perms => {};
+  onLogin = () => {
+    let email = this.state.credentials.email;
+    let emailReg = /^[A-Za-z_.0-9-]+@{1}[A-Za-z]+([.]{1}[A-Za-z]{2,4})+/;
+    if (email == '') {
+      Toast.show('Please enter email!', Toast.LONG);
+    } else if (!emailReg.test(email)) {
+      Toast.show('Please enter a Valid Email!', Toast.LONG);
+    } else {
+      let data = {
+        email: this.state.credentials.email,
+        invitelink: 'https://tokbox/callschedule',
+      };
+      axios
+        .post('http://182.74.68.177:5002/api/v1/sendInvite', data, {
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(res => {
+          Toast.show('Invitation has been sent', Toast.LONG);
+          this.props.navigation.navigate('TokScreen');
+        })
+        .catch(err => {
+          console.log(err.message);
+        });
+    }
+  };
 
   render() {
     return (
@@ -73,10 +142,13 @@ export default class MainPage extends Component {
           backgroundColor: '#eee',
           flex: 1,
           alignItems: 'center',
-          justifyContent: 'center',
         }}>
         <View style={styles.strip}>
           <Text style={styles.HomeText}> TokBox Demo </Text>
+        </View>
+        <View style={styles.FormContainer}>
+          {this.renderEmail()}
+          {this.renderLoginButton()}
         </View>
 
         {this.state.showTheThing && (
@@ -109,8 +181,22 @@ const styles = StyleSheet.create({
   },
   strip: {
     width: '100%',
+    marginTop: 60,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  FormContainer: {
+    width: '100%',
+    marginTop: 80,
+    backgroundColor: '#99AAAB',
+    flexDirection: 'row',
+    marginLeft: 20,
+    marginBottom: -30,
+  },
+  FormInput: {
+    marginBottom: -16,
+    margin: 10,
+    width: '55%',
   },
   Login: {
     width: 110,
