@@ -11,14 +11,14 @@ const AppStack = createStackNavigator(
       navigationOptions: {
         headerShown: false,
       },
-      path: 'mainpage',
+      path: 'tokbox/mainpage',
     },
     TokScreen: {
       screen: TokScreen,
       navigationOptions: {
         headerShown: false,
       },
-      path: 'callschedule',
+      path: 'tokbox/callschedule',
     },
   },
   {
@@ -29,6 +29,6 @@ const AppStack = createStackNavigator(
 const AppContainer = createAppContainer(AppStack);
 
 export default () => {
-  const prefix = 'tokbox://';
+  const prefix = 'https://';
   return <AppContainer uriPrefix={prefix} />;
 };

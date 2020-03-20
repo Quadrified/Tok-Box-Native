@@ -30,7 +30,14 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- <data android:scheme="http" android:host="www.tokboxdemo.com" android:pathPrefix="/" /> -->
 
-                <data android:scheme="tokbox"/>
+                <data android:scheme="https"/>
+
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="www.tokboxdemo.com"/>
 
             </intent-filter>
         </activity>
