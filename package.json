@@ -14,6 +14,7 @@
         "opentok-react-native": "^0.12.2",
         "react": "16.9.0",
         "react-native": "0.61.5",
+        "react-native-deep-linking": "^2.2.0",
         "react-native-gesture-handler": "^1.5.0",
         "react-native-push-notification": "^3.1.9",
         "react-native-reanimated": "^1.4.0",
