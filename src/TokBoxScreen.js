@@ -17,7 +17,10 @@ export default class TokBoxScreen extends Component {
 
     this.state = {
       streamProperties: {},
+      publisherProperties: {},
       activityindicator: true,
+      publisherwidth: '100%',
+      publisherheight: '100%',
     };
 
     this.subscriberProperties = {
@@ -32,7 +35,18 @@ export default class TokBoxScreen extends Component {
 
     this.publisherEventHandlers = {
       streamCreated: event => {
-        console.log('Publisher stream created!', event);
+        const publisherProperties = {
+          ...this.state.publisherProperties,
+          [event.streamId]: {
+            publishAudio: true,
+            cameraPosition: 'front',
+            style: {
+              width: 400,
+              height: 350,
+            },
+          },
+        };
+        this.setState({publisherProperties});
         Toast.show('You have joined in the Call', Toast.LONG);
         this.setState({activityindicator: false});
       },
@@ -69,10 +83,10 @@ export default class TokBoxScreen extends Component {
     this.apiKey = '46561752';
 
     this.sessionId =
-      '1_MX40NjU2MTc1Mn5-MTU4NDQ3MzY5MjEzMn5teFBvQW85WTlzZkJSVm1qN2RIVXNkQWx-fg';
+      '2_MX40NjU2MTc1Mn5-MTU4NTA0OTA4NDIwOX4yK0hqc3NvamMwK2dCRWlvWldBTWNnUGN-fg';
 
     this.token =
-      'T1==cGFydG5lcl9pZD00NjU2MTc1MiZzaWc9ZGViMTRhN2MzY2Q3M2NlNzQ2MWVmMzliMjQ2YTU5ODVkY2NmMDUyNjpzZXNzaW9uX2lkPTFfTVg0ME5qVTJNVGMxTW41LU1UVTRORFEzTXpZNU1qRXpNbjV0ZUZCdlFXODVXVGx6WmtKU1ZtMXFOMlJJVlhOa1FXeC1mZyZjcmVhdGVfdGltZT0xNTg0NDczNzE2Jm5vbmNlPTAuODUwNTczNjczODE5MjU1MyZyb2xlPXB1Ymxpc2hlciZleHBpcmVfdGltZT0xNTg1MDc4NTE0JmluaXRpYWxfbGF5b3V0X2NsYXNzX2xpc3Q9';
+      'T1==cGFydG5lcl9pZD00NjU2MTc1MiZzaWc9ZmM0ZmU5ZTQwYzIyNWM0ZGZmZWFmZGNkYjA0YjBiMGQ3OWQzMTg3ZTpzZXNzaW9uX2lkPTJfTVg0ME5qVTJNVGMxTW41LU1UVTROVEEwT1RBNE5ESXdPWDR5SzBocWMzTnZhbU13SzJkQ1JXbHZXbGRCVFdOblVHTi1mZyZjcmVhdGVfdGltZT0xNTg1MDQ5MjI4Jm5vbmNlPTAuNTU2MzMxNzMyMjY4OTk1MSZyb2xlPXB1Ymxpc2hlciZleHBpcmVfdGltZT0xNTg3NjQxMjI2JmluaXRpYWxfbGF5b3V0X2NsYXNzX2xpc3Q9';
   }
 
   onDisconnect = () => {
@@ -109,43 +123,40 @@ export default class TokBoxScreen extends Component {
           sessionId={this.sessionId}
           token={this.token}
           eventHandlers={this.sessionEventHandlers}
-          style={{margin: 10}}>
+          style={{margin: 10, flex: 1}}>
           <OTSubscriber
             properties={this.subscriberProperties}
             eventHandlers={this.subscriberEventHandlers}
             streamProperties={this.state.streamProperties}
-            style={{height: 100, width: 100}}
+            style={{height: 100, width: 100, flex: 1}}
           />
           <OTPublisher
             properties={this.publisherProperties}
             eventHandlers={this.publisherEventHandlers}
-            style={{width: 200, height: 250, marginTop: 5}}
+            streamProperties={this.state.publisherProperties}
+            style={{
+              width: this.state.publisherwidth,
+              height: this.state.publisherheight,
+              marginTop: 5,
+              flex: 1,
+            }}
           />
         </OTSession>
-        <TouchableOpacity
+        <View
           style={{
-            borderRadius: 6,
-            marginTop: 10,
-            height: 55,
-            width: 120,
-            marginLeft: 250,
-            marginTop: -100,
-          }}
-          onPress={this.onDisconnect}>
-          <View>
-            {/* <Text
-              style={{
-                color: '#fff',
-                fontSize: 20,
-                padding: 12,
-                alignSelf: 'center',
-                justifyContent: 'center',
-              }}>
-              End Call
-            </Text> */}
-            <EndCall width={80} height={80} />
-          </View>
-        </TouchableOpacity>
+            width: '100%',
+            position: 'absolute',
+            justifyContent: 'center',
+            alignItems: 'center',
+            bottom: 0,
+            marginBottom: 50,
+          }}>
+          <TouchableOpacity onPress={this.onDisconnect}>
+            <View>
+              <EndCall width={80} height={80} />
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
